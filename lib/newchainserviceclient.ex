@@ -13,7 +13,19 @@ defmodule Newchainserviceclient do
     response = HTTPoison.post(
       "http://localhost:3000/crypto/ecdsa-recover",
       "signature=#{hex_signature}&message_hash=#{hex_message_hash}&v=#{v}",
-      [{"Content-Type", "application/x-www-form-urlencoded"}])
-    # IO.inspect response
+      [{"Content-Type", "application/x-www-form-urlencoded"}]
+    )
+    case response do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        case Poison.decode! body do
+          %{"result" => "success", "public_key" => public_key} ->
+            public_key
+          %{"result" => "fail", "info" => info} ->
+            info
+        end
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        reason
+    end
+
   end
 end
