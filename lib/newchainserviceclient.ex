@@ -29,4 +29,3 @@ defmodule Newchainserviceclient do
 
   end
 end
-s
